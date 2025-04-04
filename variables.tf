@@ -5,7 +5,7 @@
 variable "vsphere_user" {
   type        = string
   description = "VMware vSphere user name"
-  sensitive = true
+  default = "administrator@vcenter.local"
 }
 
 variable "vsphere_password" {
@@ -17,7 +17,13 @@ variable "vsphere_password" {
 variable "vsphere_vcenter" {
   type        = string
   description = "VMWare vCenter server FQDN / IP"
-  sensitive = true
+  default = "10.20.2.20"
+  
+}
+
+variable "vsphere_host" {
+  description = "Nome do host no vSphere"
+  type        = string
 }
 
 variable "vsphere-unverified-ssl" {
@@ -130,11 +136,17 @@ variable "ipv4_netmask" {
 variable "ssh_username" {
   type      = string
   sensitive = true
-  default   = "sam"
+  default   = "gavtech"
 }
 
 variable "public_key" {
   type        = string
   description = "Public key to be used to ssh into a machine"
-  default     = "AAAAB3NzaC1yc2EAAAADAQABAAABAQCb7fcDZfIG+SxuP5UsZaoHPdh9MNxtEL5xRI71hzMS5h4SsZiPGEP4shLcF9YxSncdOJpyOJ6OgumNSFWj2pCd/kqg9wQzk/E1o+FRMbWX5gX8xMzPig8mmKkW5szhnP+yYYYuGUqvTAKX4ua1mQwL6PipWKYJ1huJhgpGHrvSQ6kuywJ23hw4klcaiZKXVYtvTi8pqZHhE5Kx1237a/6GRwnbGLEp0UR2Q/KPf6yRgZIrCdD+AtOznSBsBhf5vqcfnnwEIC/DOnqcOTahBVtFhOKuPSv3bUikAD4Vw7SIRteMltUVkd/O341fx+diKOBY7a8M6pn81HEZEmGsr7rT sam@SamMac.local"
+  default     = "AAAAB3NzaC1yc2EAAAADAQABAAACAQC4EhCDQufCU/owLWzw0g9D9wLhT1rNzrSsCAS25VnperaD3HnRm9UoldKRGQgX+tpBKgJSWhelP1OnCP8v7yYL6evt12GMnjLJ4ZeunWkP7Y3FWygPr07DVJPkJXphMsXRkTVIKVNgqcvRHvTj90uziDDpBFjVbycgH79B10jq0e9sAmC/ALY9e0GIete6ZmUaRMO7+fiasm2kOzjZ9rWpsejrWLo2cTHoyuSsNdXtrwmyUPigA3QFHYsWREZ0JeTyBYOawQQNEyaFy5W7lzCmAanOS3Pe1j/b7FRMVHZ3W7wAQA22Rm0N92EhpZlfyaCgIRrK8j4Fyf2Cimi6p8gT7hfmV17lAYuNeOoybCIuQFsbzXawULiyB/LmvBf7+GZ8dpsd5EMiRCclbKkQIWnWj7qIA+5FcrDFY6re4F82LUOCjzX2k6+KXVVT2TIiRrVmg/0avmKZ/qfDa5eYh4qnT0DUJJVrMjOYW6xpIy4iGvmCXKckBcC5EDil1wlHSea8gWbgnJsaMv1hFxMqNrJV1wmoKbp7tGYBzoj/eahMVyEBZ9cylc+JeSzFO0IhqIEnfFUcXqDjjo9/l2TOO2eweMxL79s+CtOvpPORBCk8nzQIgyDHgGT9ruZO2uNltPrjFe0a1QZzPxeKD/omvllvzX6U962JaFSqJ1ZSUMSATQ== admin@gavresorts.com.br"
+}
+
+variable "private_key_path" {
+  type        = string
+  description = "Path to the private key to be used to ssh into a machine"
+
 }
