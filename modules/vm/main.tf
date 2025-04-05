@@ -41,6 +41,38 @@ resource "vsphere_virtual_machine" "vm" {
     "guestinfo.userdata"          = base64encode(templatefile("${path.module}/templates/userdata.yaml", local.templatevars))
     "guestinfo.userdata.encoding" = "base64"
   }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo kubeadm init --pod-network-cidr=10.10.0.0/16 --apiserver-advertise-address=${var.ipv4_address} | tee /tmp/kubeadm_init.txt",
+      "mkdir -p $HOME/.kube",
+      "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config",
+      "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = var.ssh_username
+      private_key = file(var.private_key_path)
+      host        = self.default_ip_address
+    }
+  }
+
+  # Capture kubeadm join command and save it locally
+  provisioner "local-exec" {
+    command = <<EOT
+    ssh -o StrictHostKeyChecking=no -i ${var.private_key_path} ${var.ssh_username}@${var.ipv4_address} \
+    "grep 'kubeadm join' /tmp/kubeadm_init.txt" > ./kubeadm_join_command.txt
+    EOT
+  }
+}
+
+data "external" "kubeadm_join_command" {
+  program = ["bash", "-c", "cat ./kubeadm_join_command.txt"]
+}
+
+output "kubeadm_join_command" {
+  value = data.external.kubeadm_join_command.result
 }
 
 data "vsphere_datacenter" "dc" {
@@ -98,6 +130,30 @@ resource "null_resource" "configure_network" {
       sleep 5
     done
     EOT
+  }
+
+ depends_on = [vsphere_virtual_machine.vm]
+}
+
+resource "vsphere_virtual_machine" "worker" {
+  count            = regex("worker", var.name) ? 1 : 0
+  name             = "${var.name}-worker"
+  resource_pool_id = data.vsphere_host.host.resource_pool_id
+  datastore_id     = data.vsphere_datastore.datastore.id
+
+  # Configuração dos workers...
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo ${data.external.kubeadm_join_command.result}"
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = var.ssh_username
+      private_key = file(var.private_key_path)
+      host        = self.default_ip_address
+    }
   }
 
   depends_on = [vsphere_virtual_machine.vm]
