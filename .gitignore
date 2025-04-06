@@ -1,6 +1,6 @@
 # Local .terraform directories
 **/.terraform/*
-
+*kubeadm_join_*
 # .tfstate files
 *.tfstate
 *.tfstate.*

@@ -20,5 +20,5 @@ variable "vm_guest_id" {}
 variable "private_key_path" {
   description = "Path to the private key file for SSH access"
 }
-  
+
 
